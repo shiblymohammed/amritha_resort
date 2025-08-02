@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 
 interface AccommodationItem {
   id: string;
@@ -25,7 +25,17 @@ interface AccommodationCardProps {
 
 const OtelloHotelInterface = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  
+  // Parallax scroll effect
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+  
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.3, 1, 1, 0.3]);
   
   const [loadedImages, setLoadedImages] = useState<{ [key: string]: boolean }>({});
   const [activeCard, setActiveCard] = useState<string | null>(null);
@@ -111,44 +121,51 @@ const OtelloHotelInterface = () => {
   }, []);
 
   return (
-    <div className="bg-text-primary-title relative overflow-hidden">
+    <div className="bg-heritage-bg-tertiary relative overflow-hidden" ref={containerRef}>
+      {/* Parallax Background */}
+      <motion.div
+        className="absolute inset-0"
+        style={{
+          y,
+          opacity,
+          backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(58, 74, 62, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(45, 58, 49, 0.15) 0%, transparent 50%)',
+        }}
+      />
+
       {/* Main Content */}
       <main 
         ref={sectionRef}
-        className="pt-16 pb-32"
-        style={{
-          backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(58, 74, 62, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(45, 58, 49, 0.15) 0%, transparent 50%)',
-        }}
+        className="relative pt-32 pb-64"
       >
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 1, ease: [0.25, 0.25, 0.25, 1] }}
-          className="text-center mb-20 px-4 sm:px-6"
+          className="text-center mb-32 px-4 sm:px-6"
         >
           <h1 
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light mb-8 text-heritage-bg-primary leading-tight"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light mb-8 text-black leading-tight"
             style={{ fontFamily: 'Cormorant Garamond, serif' }}
           >
             Experience Unmatched
             <br />
-            <span className="text-button-accent-bg italic">Comfort & Luxury</span>
+            <span className="text-text-primary-title italic">Comfort & Luxury</span>
           </h1>
           
           <p 
-            className="text-base sm:text-lg md:text-xl text-heritage-bg-secondary max-w-2xl mx-auto leading-relaxed font-light"
-            style={{ fontFamily: 'Work Sans, sans-serif' }}
+            className="text-base sm:text-lg md:text-xl text-text-primary-title max-w-2xl mx-auto leading-relaxed font-light"
+            style={{ fontFamily: 'Cormorant Garamond, sans-serif' }}
           >
             Escape to a world of sophistication and<br className="hidden sm:block" />
             serene Otello's beauty.
           </p>
         </motion.div>
 
-        {/* Stacked Cards Container with Outside Border */}
-        <div className="max-w-full mx-auto">
-          <div className="mx-8 sm:mx-12 lg:mx-16 border-2 border-button-accent-bg p-8 bg-text-primary-title/20 backdrop-blur-sm relative">
-            <div className="space-y-4">
+        {/* Stacked Cards Container - Fixed padding and tighter gaps */}
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 mb-32">
+          <div className="border-2 border-text-primary-title bg-text-primary-title/10 backdrop-blur-s relative max-w-7xl mx-auto">
+            <div className="p-4 space-y-3">
               {accommodations.map((item, index) => (
                 <div key={item.id} className="relative">
                   <AccommodationCard
@@ -159,10 +176,6 @@ const OtelloHotelInterface = () => {
                     activeCard={activeCard}
                     setActiveCard={setActiveCard}
                   />
-                  {/* Separation Line after each card section (except last) */}
-                  {index < accommodations.length - 1 && (
-                    <div className="absolute -left-8 -right-8 bottom-[-8px] h-0.5 bg-button-accent-bg" />
-                  )}
                 </div>
               ))}
             </div>
@@ -195,44 +208,43 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({ item, index, isIn
       transition={{ duration: 0.8, delay: index * 0.3, ease: [0.25, 0.25, 0.25, 1] }}
       className="relative"
     >
-      {/* Main Card */}
+      {/* Main Card - Removed scaling effect */}
       <motion.div
-        className="relative h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] cursor-pointer overflow-hidden group border-2 border-button-accent-bg bg-text-primary-title/60 backdrop-blur-sm"
+        className="relative h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] cursor-pointer overflow-hidden group border-2 border-text-primary-title bg-heritage-bg-tertiary backdrop-blur-sm"
         onClick={handleCardClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        whileHover={{ scale: 1.005 }}
         transition={{ duration: 0.4 }}
         animate={{
           borderColor: isHovered || isExpanded ? '#9C6A50' : '#B07B5F'
         }}
       >
-        {/* Background Image */}
+        {/* Background Image with enhanced zoom and slower transition */}
         <div className="absolute inset-0">
           {loadedImages[item.id] && (
             <motion.img
               src={item.image}
               alt={item.title}
               className="w-full h-full object-cover"
-              initial={{ scale: 1.1, opacity: 0 }}
+              initial={{ scale: 1.15, opacity: 0 }}
               animate={{ 
-                scale: isHovered || isExpanded ? 1.05 : 1.1, 
+                scale: isHovered || isExpanded ? 1.25 : 1.15, 
                 opacity: isHovered || isExpanded ? 0.6 : 0.4 
               }}
-              transition={{ duration: 0.6, ease: [0.25, 0.25, 0.25, 1] }}
+              transition={{ duration: 1.2, ease: [0.25, 0.25, 0.25, 1] }}
             />
           )}
         </div>
 
         {/* Dark Overlay - Always Present */}
-        <div className="absolute inset-0 bg-text-primary-title bg-opacity-10" />
+        <div className="absolute inset-0 bg-black/40" />
         
         {/* Curtain Reveal Overlay - Solid */}
         <motion.div
           className="absolute inset-0 bg-text-primary-title"
           initial={{ y: "0%" }}
           animate={{ y: isHovered || isExpanded ? "100%" : "0%" }}
-          transition={{ duration: 0.8, ease: [0.25, 0.25, 0.25, 1] }}
+          transition={{ duration: 1.0, ease: [0.25, 0.25, 0.25, 1] }}
         />
 
         {/* Content */}
@@ -242,16 +254,15 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({ item, index, isIn
             animate={{
               y: isExpanded ? -20 : isHovered ? -10 : 0,
             }}
-            transition={{ duration: 0.4, ease: [0.25, 0.25, 0.25, 1] }}
+            transition={{ duration: 0.6, ease: [0.25, 0.25, 0.25, 1] }}
           >
             <motion.h2 
               className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[10rem] font-light mb-6 md:mb-8"
               style={{ fontFamily: 'Cormorant Garamond, serif' }}
               animate={{
-                scale: isHovered ? 1.05 : 1,
                 color: isHovered || isExpanded ? '#FBF9F6' : '#EDE8DA'
               }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.5 }}
             >
               {item.title}
             </motion.h2>
@@ -262,7 +273,7 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({ item, index, isIn
                 width: isHovered ? (window.innerWidth >= 1024 ? 140 : window.innerWidth >= 768 ? 120 : 100) : (window.innerWidth >= 1024 ? 112 : window.innerWidth >= 768 ? 96 : 80),
                 backgroundColor: isHovered || isExpanded ? '#9C6A50' : '#B07B5F'
               }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.6 }}
             />
             
             <motion.p 
@@ -273,7 +284,7 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({ item, index, isIn
                 y: isHovered ? -5 : 0,
                 color: isHovered || isExpanded ? '#FBF9F6' : '#DCD7C9'
               }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.5 }}
             >
               {item.subtitle}
             </motion.p>
@@ -288,7 +299,7 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({ item, index, isIn
                 y: isHovered || isExpanded ? 0 : 20,
                 color: isHovered || isExpanded ? '#FBF9F6' : '#DCD7C9'
               }}
-              transition={{ duration: 0.4, delay: 0.1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
               {item.description}
             </motion.p>
@@ -304,9 +315,9 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({ item, index, isIn
           opacity: isExpanded ? 1 : 0,
         }}
         transition={{ duration: 0.8, ease: [0.25, 0.25, 0.25, 1] }}
-        className="overflow-hidden mt-4"
+        className="overflow-hidden mt-3"
       >
-        <div className="space-y-4">
+        <div className="space-y-3">
           {item.subCategories?.map((subItem, subIndex) => (
             <div key={subItem.name} className="relative">
               <motion.div
@@ -320,19 +331,19 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({ item, index, isIn
                   borderColor: hoveredSubCard === subItem.name ? '#9C6A50' : '#B07B5F'
                 }}
               >
-                {/* Background Image */}
+                {/* Background Image with enhanced zoom and slower transition */}
                 <div className="absolute inset-0">
                   {loadedImages[`${item.id}-${subItem.name}`] && (
                     <motion.img
                       src={subItem.image}
                       alt={subItem.name}
                       className="w-full h-full object-cover"
-                      initial={{ scale: 1.1, opacity: 0 }}
+                      initial={{ scale: 1.15, opacity: 0 }}
                       animate={{ 
-                        scale: hoveredSubCard === subItem.name ? 1.05 : 1.1, 
+                        scale: hoveredSubCard === subItem.name ? 1.25 : 1.15, 
                         opacity: hoveredSubCard === subItem.name ? 0.6 : 0.4 
                       }}
-                      transition={{ duration: 0.6, ease: [0.25, 0.25, 0.25, 1] }}
+                      transition={{ duration: 1.2, ease: [0.25, 0.25, 0.25, 1] }}
                     />
                   )}
                 </div>
@@ -345,7 +356,7 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({ item, index, isIn
                   className="absolute inset-0 bg-text-primary-title"
                   initial={{ y: "0%" }}
                   animate={{ y: hoveredSubCard === subItem.name ? "100%" : "0%" }}
-                  transition={{ duration: 0.7, ease: [0.25, 0.25, 0.25, 1] }}
+                  transition={{ duration: 1.0, ease: [0.25, 0.25, 0.25, 1] }}
                 />
 
                 {/* Content */}
@@ -355,16 +366,15 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({ item, index, isIn
                     animate={{
                       y: hoveredSubCard === subItem.name ? -12 : 0,
                     }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.5 }}
                   >
                     <motion.h3 
                       className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light mb-4 md:mb-6"
                       style={{ fontFamily: 'Cormorant Garamond, serif' }}
                       animate={{
-                        scale: hoveredSubCard === subItem.name ? 1.03 : 1,
                         color: hoveredSubCard === subItem.name ? '#FBF9F6' : '#EDE8DA'
                       }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.5 }}
                     >
                       {subItem.name}
                     </motion.h3>
@@ -375,7 +385,7 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({ item, index, isIn
                         width: hoveredSubCard === subItem.name ? (window.innerWidth >= 1024 ? 120 : window.innerWidth >= 768 ? 100 : 80) : (window.innerWidth >= 1024 ? 96 : window.innerWidth >= 768 ? 80 : 64),
                         backgroundColor: hoveredSubCard === subItem.name ? '#9C6A50' : '#B07B5F'
                       }}
-                      transition={{ duration: 0.4 }}
+                      transition={{ duration: 0.6 }}
                     />
                     
                     <motion.p 
@@ -386,7 +396,7 @@ const AccommodationCard: React.FC<AccommodationCardProps> = ({ item, index, isIn
                         y: hoveredSubCard === subItem.name ? -3 : 0,
                         color: hoveredSubCard === subItem.name ? '#FBF9F6' : '#DCD7C9'
                       }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.5 }}
                     >
                       {subItem.subtitle}
                     </motion.p>

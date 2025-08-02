@@ -134,7 +134,7 @@ const AccommodationSection: React.FC = () => {
   return (
     <motion.div 
       ref={sectionRef}
-      className="min-h-screen bg-heritage-bg-accent overflow-hidden relative"
+      className="min-h-screen bg-heritage-bg-accent overflow-hidden relative py-16"
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       variants={containerVariants}
