@@ -16,7 +16,10 @@ export default {
         // --- Text Colors ---
         'text-primary-title': '#3A4A3E', // Deep, sophisticated green/charcoal for main titles (e.g., 'kerala-forest' inspired)
         'text-secondary-title': '#607C6E', // Muted, earthy green for secondary titles and subheadings
-        'text-description': '#5D5C50', // Medium dark, slightly warm grey for main descriptions/body text
+        'text-description': '#5D5C50',
+        'text-description-2': '#313f35',// Medium dark, slightly warm grey for main descriptions/body text // Medium dark, slightly warm grey for main descriptions/body text
+        'text-description-3': '#435547', // Medium dark, slightly warm grey for main descriptions/body text // Medium dark, slightly warm grey for main descriptions/body text
+        
         'text-more-description': '#7C7B6F', // Lighter, soft grey for secondary descriptions, captions, or less emphasis text
 
         // --- Border Colors ---
@@ -48,4 +51,7 @@ export default {
   },
   plugins: [],
 }
+
+
+
 

@@ -10,7 +10,6 @@ interface DishCard {
 
 const DiningSection: React.FC = () => {
   const leftSectionRef = useRef<HTMLDivElement>(null);
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [loadedImages, setLoadedImages] = useState<{[key: number]: boolean}>({});
 
   const dishes: DishCard[] = [
@@ -148,7 +147,7 @@ const DiningSection: React.FC = () => {
             </h1>
             <div className="w-20 lg:w-24 h-0.5 bg-button-accent-bg mx-auto mb-10" />
             <p 
-              className="text-sm lg:text-base tracking-[0.15em] text-text-more-description font-light"
+              className="text-sm lg:text-base tracking-[0.15em] text-button-accent-text font-light"
               style={{ fontFamily: 'Work Sans, sans-serif' }}
             >
               EXCEPTIONAL CULINARY EXPERIENCES AWAIT
@@ -159,70 +158,53 @@ const DiningSection: React.FC = () => {
           {dishes.map((dish, index) => (
             <div
               key={dish.id}
-              className={`border overflow-hidden transition-all duration-500 max-w-lg mx-auto group cursor-pointer shadow-sm ${
-                hoveredCard === dish.id 
-                  ? 'border-white shadow-lg' 
-                  : 'border-white'
-              }`}
-              onMouseEnter={() => setHoveredCard(dish.id)}
-              onMouseLeave={() => setHoveredCard(null)}
-              style={{
-                transform: hoveredCard === dish.id ? 'scale(1.02) translateY(-4px)' : 'scale(1)',
-                boxShadow: hoveredCard === dish.id 
-                  ? '0 12px 40px rgba(176, 123, 95, 0.15)' 
-                  : '0 2px 8px rgba(93, 92, 80, 0.08)'
-              }}
+              className=" border-2 border-text-description-3  bg-text-description-2 overflow-hidden p-8 max-w-lg mx-auto cursor-pointer shadow-sm"
             >
               {/* Image Section */}
-              <div className="relative h-48 lg:h-64 overflow-hidden">
+              <div className="relative h-56 lg:h-64 overflow-hidden">
                 {loadedImages[dish.id] && (
                   <img
                     src={dish.image}
                     alt={dish.name}
-                    className="w-full h-full object-cover transition-all duration-700"
+                    className="w-full h-full object-cover"
                     style={{
-                      transform: hoveredCard === dish.id ? 'scale(1.1)' : 'scale(1.05)',
-                      opacity: hoveredCard === dish.id ? 0.9 : 0.8
+                      transform: 'scale(1.05)',
+                      opacity: 0.8
                     }}
                   />
                 )}
                 
                 {/* Dark overlay */}
                 <div 
-                  className="absolute inset-0 transition-all duration-500"
-                  style={{
-                    background: hoveredCard === dish.id 
-                      ? 'linear-gradient(to top, rgba(58, 74, 62, 0.7), rgba(58, 74, 62, 0.3))'
-                      : 'linear-gradient(to top, rgba(58, 74, 62, 0.6), rgba(58, 74, 62, 0.4))'
-                  }}
+                  className="absolute inset-0"
+                  
                 />
               </div>
               
               {/* Content Section */}
-              <div className="p-6 lg:p-8" style={{ backgroundColor: '#2d3a31' }}>
+              <div className="p-6 lg:p-8">
                 <div className="text-center">
                   <h3 
-                    className="text-2xl lg:text-3xl font-light text-white mb-4 transition-all duration-300"
+                    className="text-2xl lg:text-3xl font-light text-white mb-4"
                     style={{ 
-                      fontFamily: "Cormorant Garamond, serif",
-                      transform: hoveredCard === dish.id ? 'translateY(-2px)' : 'translateY(0)'
+                      fontFamily: "Cormorant Garamond, serif"
                     }}
                   >
                     {dish.name}
                   </h3>
                   
                   <div 
-                    className="bg-button-accent-bg mx-auto mb-4 transition-all duration-400 h-0.5"
+                    className="bg-button-accent-bg mx-auto mb-4 h-0.5"
                     style={{
-                      width: hoveredCard === dish.id ? '60px' : '48px'
+                      width: '48px'
                     }}
                   />
                   
                   <p 
-                    className="text-gray-300 text-center mb-6 leading-relaxed text-sm lg:text-base font-light transition-all duration-300"
+                    className="text-gray-300 text-center mb-6 leading-relaxed text-sm lg:text-base font-light"
                     style={{ 
                       fontFamily: 'Work Sans, sans-serif',
-                      opacity: hoveredCard === dish.id ? 1 : 0.9
+                      opacity: 0.9
                     }}
                   >
                     {dish.description}
@@ -230,15 +212,9 @@ const DiningSection: React.FC = () => {
                   
                   <button
                     onClick={() => handleOrderNow(dish.name)}
-                    className={`px-6 lg:px-8 py-3 transition-all duration-400 font-light text-xs lg:text-sm tracking-[0.1em] ${
-                      hoveredCard === dish.id
-                        ? 'bg-text-primary-title text-button-accent-hover-text border border-button-white shadow-lg'
-                        : 'bg-button-secondary-bg border border-button-white text-white hover:bg-button-secondary-hover-bg hover:text-button-secondary-hover-text hover:border-button-secondary-hover-border'
-                    }`}
+                    className="px-6 lg:px-8 py-3 font-bold text-xs lg:text-sm tracking-[0.1em] bg-button-secondary-bg border-2 rounded border-button-accent-bg text-button-accent-bg hover:bg-button-accent-bg hover:text-heritage-bg-primary transition-colors "
                     style={{ 
-                      fontFamily: 'Work Sans, sans-serif',
-                      transform: hoveredCard === dish.id ? 'translateY(-1px)' : 'translateY(0)',
-                      boxShadow: hoveredCard === dish.id ? '0 4px 20px rgba(176, 123, 95, 0.2)' : 'none'
+                      fontFamily: 'Work Sans, sans-serif'
                     }}
                   >
                     ORDER NOW
@@ -251,26 +227,21 @@ const DiningSection: React.FC = () => {
       </div>
 
       {/* Right Side - Fixed Image */}
-      <div className="w-1/2 bg-heritage-bg-accent absolute right-0 top-0 h-screen flex items-center justify-center">
-        <div className="w-[85%] h-[75%] flex items-center justify-center relative">
+      <div className="w-1/2 bg-button-accent-bg absolute right-0 top-0 h-screen flex items-center justify-center">
+        <div className="w-[80%] h-[80%] flex items-center justify-center relative">
           <div className="absolute inset-0 border border-border-accent" />
           <img
             src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=1000&fit=crop"
             alt="Restaurant Interior"
-            className="w-full h-full object-cover transition-all duration-700"
+            className="w-full h-full object-cover"
             style={{
-              filter: 'sepia(15%) saturate(85%) brightness(0.95) contrast(1.05)',
+              filter: 'sepia(0%) saturate(85%) brightness(0.95) contrast(1.05)',
             }}
           />
           
           {/* Heritage-themed overlay on right image */}
           <div className="absolute inset-0 bg-gradient-to-l from-transparent via-text-primary-title/10 to-text-primary-title/30" />
-          
-          {/* Decorative corner elements with heritage colors */}
-          <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-button-accent-bg opacity-70" />
-          <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-button-accent-bg opacity-70" />
-          <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-button-accent-bg opacity-70" />
-          <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-button-accent-bg opacity-70" />
+
         </div>
       </div>
 
@@ -285,4 +256,4 @@ const DiningSection: React.FC = () => {
   );
 };
 
-export default DiningSection;
+export default DiningSection;
